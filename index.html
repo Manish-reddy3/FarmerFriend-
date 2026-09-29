@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FarmerFriend – Soil Health Card to crop recommendation</title>
+<meta name="description" content="Turn your Soil Health Card into a practical crop recommendation using soil data, local weather, and machine learning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="#top" aria-label="FarmerFriend home">
+    <svg class="brand-mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+      <path d="M12 22V9" stroke="currentColor" stroke-width="1.6" fill="none"/>
+      <path d="M12 12C7 12 5 8.5 5 4c4.5 0 7 2.5 7 8Z" fill="currentColor"/>
+      <path d="M12 15c4.5 0 7-2.5 7-7-4.5 0-7 2.5-7 7Z" fill="#B96B3D"/>
+      <path d="M4 22h16" stroke="currentColor" stroke-width="1.6"/>
+    </svg>
+    <span>FarmerFriend</span>
+  </a>
+  <nav class="site-nav" aria-label="Main">
+    <a href="#how">How it works</a>
+    <a href="#why">Why FarmerFriend</a>
+  </nav>
+  <a class="header-cta" href="#analyzer">Analyze Soil</a>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Know your soil.<br>Grow with confidence.</h1>
+      <p class="lead">Turn your Soil Health Card into a practical crop recommendation using soil data, local weather, and machine learning.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#analyzer" id="heroCta">Analyze Your Soil</a>
+        <span class="hero-note">Built for smarter farming</span>
+      </div>
+    </div>
+    <figure class="hero-visual">
+      <div class="hero-photo" id="heroPhoto">
+        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80"
+             alt="A wide farm field with rows of crops under an open sky" loading="eager"
+             onerror="this.remove()">
+      </div>
+      <figcaption class="hero-caption">
+        <span>Nitrogen, phosphorus, potassium and pH, read from the card in your hand.</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ANALYZER -->
+  <section class="analyzer" id="analyzer" aria-labelledby="analyzerTitle">
+    <div class="analyzer-inner">
+
+      <div id="analyzerForm">
+        <div class="step-block">
+          <p class="step-tag">Step 1 of 2</p>
+          <h2 id="analyzerTitle">Start with your Soil Health Card</h2>
+          <p class="step-desc">Upload a clear photo of your Soil Health Card. FarmerFriend will read the nutrient values automatically.</p>
+
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept="image/jpeg,image/png,.jpg,.jpeg,.png" class="visually-hidden" aria-label="Choose a Soil Health Card image">
+            <div class="drop-empty" id="dropEmpty">
+              <p class="drop-title">Drop your Soil Health Card here</p>
+              <p class="drop-or">or</p>
+              <button type="button" class="btn btn-light" id="chooseBtn">Choose an image</button>
+              <p class="drop-hint">JPG, JPEG or PNG</p>
+            </div>
+            <div class="drop-preview" id="dropPreview" hidden>
+              <img id="previewImg" alt="Preview of your uploaded Soil Health Card">
+              <div class="preview-meta">
+                <p class="file-name" id="fileName"></p>
+                <p class="file-size" id="fileSize"></p>
+                <div class="preview-actions">
+                  <button type="button" class="link-btn" id="changeBtn">Change image</button>
+                  <button type="button" class="link-btn" id="removeBtn">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="field-error" id="fileError" role="alert" hidden></p>
+        </div>
+
+        <div class="step-block step-locked" id="locationBlock">
+          <p class="step-tag">Step 2 of 2</p>
+          <h2>Where is your field?</h2>
+          <p class="step-desc">Your location helps us use local weather conditions for the prediction.</p>
+          <div class="coords">
+            <div class="field">
+              <label for="latitude">Latitude</label>
+              <input type="number" id="latitude" step="any" min="-90" max="90" inputmode="decimal" placeholder="e.g. 26.9124">
+            </div>
+            <div class="field">
+              <label for="longitude">Longitude</label>
+              <input type="number" id="longitude" step="any" min="-180" max="180" inputmode="decimal" placeholder="e.g. 75.7873">
+            </div>
+          </div>
+          <button type="button" class="btn btn-light" id="locateBtn">Use my location</button>
+          <p class="field-error" id="locationMsg" role="status" hidden></p>
+        </div>
+
+        <div class="submit-row">
+          <button type="button" class="btn btn-accent" id="analyzeBtn" disabled>Analyze Soil</button>
+          <p class="loading-text" id="loadingText" role="status" aria-live="polite" hidden></p>
+        </div>
+        <div class="api-error" id="apiError" role="alert" hidden></div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="results" id="results" hidden aria-live="polite">
+        <div class="result-head">
+          <h2>Your crop recommendation</h2>
+          <p class="crop-name" id="cropName"></p>
+          <p class="result-sub">Based on the soil and weather information provided.</p>
+        </div>
+
+        <div class="result-columns">
+          <div class="data-group">
+            <h3>Soil profile</h3>
+            <dl class="data-rows">
+              <div><dt>Nitrogen</dt><dd id="rN"></dd></div>
+              <div><dt>Phosphorus</dt><dd id="rP"></dd></div>
+              <div><dt>Potassium</dt><dd id="rK"></dd></div>
+              <div><dt>pH</dt><dd id="rPH"></dd></div>
+            </dl>
+          </div>
+          <div class="data-group">
+            <h3>Local conditions</h3>
+            <dl class="data-rows">
+              <div><dt>Temperature</dt><dd id="rTemp"></dd></div>
+              <div><dt>Humidity</dt><dd id="rHum"></dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="inputs-used">
+          <h3>Prediction inputs</h3>
+          <ul class="input-list" id="inputList"></ul>
+          <p class="inputs-note">The recommendation is generated from the soil values extracted from your card and the local weather conditions available at the time of analysis.</p>
+        </div>
+
+        <button type="button" class="btn btn-light" id="resetBtn">Analyze another card</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><span class="num">01</span><div><h3>Upload</h3><p>Your Soil Health Card is read automatically.</p></div></li>
+      <li><span class="num">02</span><div><h3>Locate</h3><p>Your field location provides local weather context.</p></div></li>
+      <li><span class="num">03</span><div><h3>Recommend</h3><p>The model combines the information to suggest a crop.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="why" id="why">
+    <h2>A recommendation built from real inputs.</h2>
+    <div class="why-list">
+      <div><h3>Soil nutrients</h3><p>N, P, K and pH extracted from your Soil Health Card.</p></div>
+      <div><h3>Local weather</h3><p>Temperature and humidity based on your field location.</p></div>
+      <div><h3>Machine learning</h3><p>A trained classification model combines these inputs to generate the crop recommendation.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div>
+    <p class="foot-brand">FarmerFriend</p>
+    <p>Soil intelligence for better decisions.</p>
+  </div>
+  <p>© 2026 FarmerFriend</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

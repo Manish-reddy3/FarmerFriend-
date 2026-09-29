@@ -1,5 +1,5 @@
 // FarmerFriend frontend logic. Change API_URL if the backend moves.
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://farmerfriend-9fia.onrender.com";
 
 const $ = (id) => document.getElementById(id);
 const el = {

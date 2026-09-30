@@ -75,27 +75,29 @@ def extract_soil(soil):
 
 
     prompt = """
-    Extract ONLY these four values from the image:
+Extract ONLY the Test Value for:
 
-    Nitrogen (N)
-    Phosphorus (P)
-    Potassium (K)
-    pH
+N = Available Nitrogen
+P = Available Phosphorus
+K = Available Potassium
+pH = pH
 
-    Return ONLY a valid JSON object.
+Look only at the SOIL TEST RESULTS table.
 
-    Example:
-    {
-        "N": 70,
-        "P": 50,
-        "K": 60,
-        "pH": 4.7
-    }
+Ignore Rating, units, fertilizer recommendations,
+and all other values.
 
-    Do not return markdown.
-    Do not return ```json.
-    Do not provide explanations.
-    """
+Return ONLY JSON:
+
+{
+    "N": number,
+    "P": number,
+    "K": number,
+    "pH": number
+}
+
+Do not guess. Do not add explanations.
+"""
 
 
     response = client.responses.create(
@@ -129,6 +131,8 @@ def extract_soil(soil):
 
         ],
 
+        max_output_tokens=200,
+
         text={
             "format": {
                 "type": "json_object"
@@ -141,12 +145,9 @@ def extract_soil(soil):
     print(response.output_text)
 
 
-    soil = json.loads(
+    return json.loads(
         response.output_text
     )
-
-
-    return soil
 
 
 # =========================================================

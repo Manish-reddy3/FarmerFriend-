@@ -157,46 +157,36 @@ def get_weather(latitude, longitude):
 
     url = "https://api.agromonitoring.com/agro/1.0/weather"
 
-
     params = {
-
         "lat": latitude,
-
         "lon": longitude,
-
         "appid": WEATHER_API_KEY,
-
         "units": "metric"
-
     }
 
-
     response = requests.get(
-
         url,
-
-        params=params
-
+        params=params,
+        timeout=15
     )
 
+    print("WEATHER STATUS:", response.status_code)
+    print("WEATHER RESPONSE:", response.text)
+
+    if response.status_code != 200:
+        raise Exception(
+            f"Weather API failed: {response.text}"
+        )
 
     weather = response.json()
 
-
     temperature = weather["main"]["temp"]
-
     humidity = weather["main"]["humidity"]
 
-
     return {
-
         "temperature": temperature,
-
         "humidity": humidity
-
     }
-
-
 # =========================================================
 # PREPARE DATA
 # =========================================================
